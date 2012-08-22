@@ -1,0 +1,140 @@
+Flasm 1.62
+· Bug fixes, thanks to Petr Ovtchenkov et al.
+
+Flasm 1.61
+· importAssets2 tag fix
+· placeObject2 fix (Flash 4)
+· Calculate path to the flasm.ini in a more reliable way
+
+Flasm 1.6
+· Flash 8: support for metadata, fileAttributes tags
+· Flash 8: support for placeObject3, importAssets2 tags (Wang Zhen)
+· "Update with Flasm and Preview" JSFL action now works in Flash 8 IDE
+· Windows binary includes zlib 1.2.3
+· Fixed: names of register parameters of function2 may contain non-english characters
+· Calling Flasm without a command: flasm foo.flm has the same effect as flasm -a foo.flm
+
+Flasm 1.52
+· Live testing embedded Flasm actions in Flash MX 2004 with JSFL command
+· New -b mode: generate __bytecode__ instruction or byte sequence
+· Support for FSCommand2 (introduced in FlashLite)
+· Optionally show constant references instead of strings in disassembly
+· Allow empty constant pools
+· Support for multiple constant pools: Flasm will show constant references instead of strings
+· Log file support
+· keyPress events renamed for compatibility with Flash: _PGDN to _PAGEDOWN, _DOWN to _PAGEDOWN
+· Fixed: keyPress event reported "unknown key" for some working keys
+· Allow hex key codes: -a will work even if the key in keyPress is unsupported
+· Fixed: #include wouldn't work in embedded mode
+· function2 will now handle all kinds of automatic parameters including strange species that are neither preloaded nor suppressed
+· Max line length for flm files set to 65535 (was 4096)
+· If function name is a keyword or contains non-english characters, it will be quoted automatically in disassembly
+· Exception names after try keyword are now quoted in disassembly
+· Search for flasm.ini in the current directory first, then look at executable's path
+
+Flasm 1.51
+· scriptLimits tag support
+· Corrected erroneous placing of exportAssets/importAssets tags in some situations
+· Always write long length for soundStreamBlock because of Flash Player bug
+
+Flasm 1.5
+· Full Flash MX 2004 support
+· New actions: implements, extends, try/catch/finally, throw, cast, function2
+· New event: onClipEvent construct
+· Flasm now uses gperf together with flex for parsing keywords. It means Flasm got smaller and faster.
+· I've dropped support for $flasm, $end and $include macros. Inserting Flasm code into ActionScript is now even easier.
+· Windows version: zlib inside, no external zlib.dll needed; update to zlib 1.1.4
+· Large number of bug/crash fixes
+· Any number of labels possible
+· Show numerical jumps to the middle of action with warnings in disassembly.
+· Better memory handling
+· Try to recover broken constant pool declaration (uncomplete).
+· Report if file to update is in use.
+· New flasm.ini parameters: showoffset, hexoffset, literalregisters (suggested by Casper Schuirink), clearregisterargs
+· You (and me) may now add comments to flasm.ini. Every line starting with # character is considered a comment.
+· Button keyPress events renamed for compatibility with Flash: _DEL to _DELETE, _DN to _DOWN, _INS to _INSERT. Added missing _ESCAPE key.
+· Support for exportAssets and importAssets tags
+· Show warnings about everything unusual (events/actions/key codes etc.) to the console.
+
+Flasm 1.42
+· strictMode ON / strictMode OFF (canceled in later Flash versions)
+· New bison fix
+· stringGreaterThan action, code 0x68
+· Numerical jumps support: positive/negative values, offset starts from the branch end, i.e. branch 0 goes to the next instruction as if no branch were present.
+· Number of labels per block increased to 2048.
+
+Flasm 1.41
+· Flasm now handles compressed sfws transparently - no need to decompress before disassembling or updating. New attribute "compressed" added to the movie declaration (first line of your disassembly).
+· There is a really strange bug in Flash Player (MX too): it always expects long length for gif/png images. SWF File Format spec allows storing small lengthes in a more compact manner than big ones. In a special case of very small images (smaller than 64 byte) Flasm would use short length, and Flash Player would be unable to display these images. Flasm 1.41 takes care of this bug now. Thanks to Marcelo Vomaro for pointing me to the issue.
+· Liam Morley has found a problem with gotoAndStop/gotoAndPlay actions. I've tracked it down to the following: undocumented argument for SWF action gotoFrame2 exists, containing the number of frames to add to the expression on stack. The behavior is described here.
+· Updated Testing embedded actions paragraph for Flash MX, Resources, ActionScript protection, and Project state sections.
+
+Flasm 1.4
+· Flasm 1.4 fully supports new features introduced by Flash MX.
+· Movie clips can handle all button events now, so onClipEvent format has changed inside of SWF. Note buttons do not support movie clip events!
+· New initialize event - component parameters are no longer set with load event unlike used to be for smartclips in Flash 5, but with new initialize event.
+· initMovieClip tag - new tag deals with component initialization: look for #initclip .. #endinitclip in Flash MX help.
+· New actions: greaterThan, instanceOf, strictEquals, enumerateValue.
+· Debugger now utilizes enableDebugger2 tag.
+· Flash MX implements standard zlib compression. Flasm fully supports it.
+
+Flasm 1.36
+· Support for passwords in protect tag added
+· New enableDebugger tag.
+· Now it's easy to include disassemble command in Windows context menu for swf extension. Thanks to Pavils Jurjans for suggesting the feature.
+
+Flasm 1.35
+· After Cygwin people have updated their product, and after I've fixed some minor bugs in Flasm, Flasm executable compiled with Cygwin finally supports embedding mode and interacts with Flash properly. So I moved from djgpp to Cygwin/ming32. What it means to end users: smaller executable (uses Windows libraries), no limitation for path length in embedding mode. What it means to developers: djgpp installation on win 2000 was almost impossible. Now you can compile with a standard Cygwin environment.
+· I've put the Flasm source into CVS on sourceforge.
+· Flasm now uses ini file instead of environment variables in testing mode.
+· Function parameters are included in quotes in disassembly to avoid name collisions with your ActionScript.
+· Overflowed constant pools no more crash Flasm disassembler. You will be also not allowed to assemble pools larger than 64k.
+· Unclosed setTarget/setTargetExpr blocks created by older Flash versions will be completed automatically.
+· Bug in swfAction fixed.
+· The protect tag is shown in disassembly.
+· Former strange looking waitForFrameExpr/waitForFrame .. else skip .. actions are renamed to ifFrameLoaded/ifFrameLoadedExpr and support conventional syntax: ifFrameLoaded frameNum .. end, ifFrameLoadedExpr .. end
+· As usual, documentation updates. I know it's hard to find what's new because of the structure I've choosen for this page - so sorry. Compare old and new ones with diff :)
+
+Flasm 1.32
+· Better handling of floating-point values updated, infinity and not-a-number constants are now supported, Number.MAX_VALUE and Number.MIN_VALUE are correctly resolved.
+· I've finally understood that push type 1 (property) actually pushes a single-precision float value. It caused confusion before, because property constants had strange meanings if treated as integers. Look at updated push and getProperty/setProperty topics for details.
+· "Label defined twice" and other error messages added.
+· New FLABROWSER environment variable to enable showing Flash help while using Flasm in embedded mode.
+· Increased portability across systems: Makefile shows no warnings; some problematic math functions redefined.
+· Escape characters are recognized in getUrl too.
+· Embedding mode: multiple user constant declarations allowed now in one frame. They all will be added to the main pool for this frame. Useful when, say, many functions with independent declarations are inserted with $include. Some bugs with $include fixed.
+· On Windows 2000 dos box was closing immediately after Flasm reported errors in embedding mode. Flasm 1.32 now waits for user key press (Windows version only). Don't know if this misbehavior occurs on mac too, please report.
+· Empty movie clip events compile without errors.
+· action keyword used in Flasm for unknown actions support renamed to swfAction to prevent collision with Branden Hall's ACK eventEngine.
+· The maximum number of labels per action block increased from 256 to 1024. The former caused crashes with very large scripts.
+· Numbers as movie clip instance names are supported now.
+· Flasm compiled Flash 4-style oldAdd action improperly as Flash 5-style add - fixed.
+· Documentation updates: real-life optimization example etc.
+
+Flasm 1.3
+· Nested includes supported with maximal depth 10.
+· Support for Flasm macros in Flash IDE is here.
+· Finally got line numbers for error messages working! Don't laugh, it's a challenge with flex. Line numbers and file names are reported for included files too.
+· Error messages are sent to the console even if the output of disassembler is redirected to the file. Some specific messages added instead of standard "parse error". Please tell me where you would like to see warnings.
+· push type 9 discovered, which does 2-byte constant pool lookup.
+· Corrected the wrong assembly of gotoAndPlay/gotoAndStop actions thanks to Sven König who noticed the bug.
+· Support for unknown actions added.
+· Working mac executable (compiled on SourceForge's compiler farm). No more need to compile Flasm yourself.
+· For those who must compile: Makefile adjusted to work for all systems.
+· Problems with large ActionScripts fixed. My test file contains 93 kb compiled ActionScript in one frame only. It works fine now.
+
+Flasm 1.22
+· Correct handling of property constants: more properties defined - the list is full now, NAME_PROPERTY fixed.
+· Escape characters \b, \f, \n, \r, \t and \\ defined. An ActionScript string containing those characters will now be disassembled without producing weird line breaks or other anomalities.
+· Backup of original swf is created before update.
+
+Flasm 1.21
+· The famous double nots written by Flash will be now automatically removed at assembling time. So forget them and concentrate on optimization!
+· Label handling improved. Flasm 1.2 sometimes forgot to write labels at the end of action block.
+· Fixed: on Windows 2000 Flasm 1.2 could not update the original swf and you had to manually rename the temp file created foo.$$$ into foo.swf.
+· Flasm 1.21 crashes no more if called without arguments or if input file is missing.
+· disassembler no more writes nonsense 53.39999999999964 values instead of 53.4.
+· Added toString action corresponding to a = String(b); in ActionScript.
+
+Flasm 1.2
+It was my first "official" version, the main difference to Dave's original was the ability to deal with the whole swf. Event disassembly added, some missing bytecodes, few errors fixed. Don't remember all the changes exactly, this page did not exist yet.

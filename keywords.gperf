@@ -1,0 +1,269 @@
+%{
+/*
+flasm, command line assembler & disassembler of flash actionscript bytecode
+Copyright (c) 2001 Opaque Industries, (c) 2002-2007 Igor Kogan
+All rights reserved. See LICENSE.TXT for terms of use.
+*/
+
+#include <string.h>
+#include "assembler.tab.h"
+#include "util.h"
+#ifdef MEMWATCH
+#include "memwatch.h"
+#endif
+struct keyword *in_word_set(register const char *str, register unsigned int len);
+%}
+struct keyword {}
+%%
+compressed,             0,              COMPRESSED
+protect,                0,              PROTECT
+scriptlimits,           0,              SCRIPTLIMITS
+enabledebugger,         0,              ENABLEDEBUGGER
+enabledebugger2,        0,              ENABLEDEBUGGER2
+metadata,               0,              METADATA
+fileattributes,         0,              FILEATTRIBUTES
+importassets,           0,              IMPORTASSETS
+exportassets,           0,              EXPORTASSETS
+placemovieclip,         0,              PLACEMOVIECLIP
+definemovieclip,        0,              DEFINEMOVIECLIP
+definebutton,           0,              DEFINEBUTTON
+end,                    0,              END
+#
+# action containers
+#
+initmovieclip,         -1,              INITMOVIECLIP
+frame,                 -1,              FRAME
+on,                    -1,              ON
+onclipevent,           -1,              ONCLIPEVENT
+#
+# action blocks
+#
+with,                   1,              WITH
+try,                    1,              TRY
+catch,                  0,              CATCH
+finally,                0,              FINALLY
+ifframeloadedexpr,      1,              IFFRAMELOADEDEXPR
+ifframeloaded,          1,              IFFRAMELOADED
+settarget,              2,              SETTARGET
+settargetexpr,          2,              SETTARGETEXPR
+function,               1,              FUNCTION
+function2,              1,              FUNCTION2
+#
+# special numbers
+#
+_nan,                   0,              _NAN
+positive_infinity,      0,              POSITIVE_INFINITY
+negative_infinity,      0,              NEGATIVE_INFINITY
+_nanf,                  0,              _NANF
+positive_infinityf,     0,              POSITIVE_INFINITYF
+negative_infinityf,     0,              NEGATIVE_INFINITYF
+#
+# properties
+#
+x_property,             0,              X_PROPERTY
+y_property,             0,              Y_PROPERTY
+xscale_property,        0,              XSCALE_PROPERTY
+yscale_property,        0,              YSCALE_PROPERTY
+width_property,         0,              WIDTH_PROPERTY
+height_property,        0,              HEIGHT_PROPERTY
+alpha_property,         0,              ALPHA_PROPERTY
+visible_property,       0,              VISIBLE_PROPERTY
+rotation_property,      0,              ROTATION_PROPERTY
+highquality_property,   0,              HIGHQUALITY_PROPERTY
+focusrect_property,     0,              FOCUSRECT_PROPERTY
+soundbuftime_property,  0,              SOUNDBUFTIME_PROPERTY
+currentframe_property,  0,              CURRENTFRAME_PROPERTY
+totalframes_property,   0,              TOTALFRAMES_PROPERTY
+target_property,        0,              TARGET_PROPERTY
+framesloaded_property,  0,              FRAMESLOADED_PROPERTY
+name_property,          0,              NAME_PROPERTY
+droptarget_property,    0,              DROPTARGET_PROPERTY
+url_property,           0,              URL_PROPERTY
+quality_property,       0,              QUALITY_PROPERTY
+xmouse_property,        0,              XMOUSE_PROPERTY
+ymouse_property,        0,              YMOUSE_PROPERTY
+#
+# button events
+#
+idletooverup,           0,              BIDLETOOVERUP
+overuptoidle,           0,              BOVERUPTOIDLE
+overuptooverdown,       0,              BOVERUPTOOVERDOWN
+overdowntooverup,       0,              BOVERDOWNTOOVERUP
+overdowntooutdown,      0,              BOVERDOWNTOOUTDOWN
+outdowntooverdown,      0,              BOUTDOWNTOOVERDOWN
+outdowntoidle,          0,              BOUTDOWNTOIDLE
+idletooverdown,         0,              BIDLETOOVERDOWN
+overdowntoidle,         0,              BOVERDOWNTOIDLE
+keypress,               0,              KEYPRESS
+#
+# key press event
+#
+_left,                  0,              _LEFT
+_right,                 0,              _RIGHT
+_home,                  0,              _HOME
+_end,                   0,              _END
+_insert,                0,              _INSERT
+_delete,                0,              _DELETE
+_backspace,             0,              _BACKSPACE
+_enter,                 0,              _ENTER
+_up,                    0,              _UP
+_down,                  0,              _DOWN
+_pageup,                0,              _PAGEUP
+_pagedown,              0,              _PAGEDOWN
+_tab,                   0,              _TAB
+_escape,                0,              _ESCAPE
+_space,                 0,              _SPACE
+#
+# movie clip events
+#
+load,                   0,              MCLOAD
+enterframe,             0,              MCENTERFRAME
+unload,                 0,              MCUNLOAD
+mousemove,              0,              MCMOUSEMOVE
+mousedown,              0,              MCMOUSEDOWN
+mouseup,                0,              MCMOUSEUP
+keydown,                0,              MCKEYDOWN
+keyup,                  0,              MCKEYUP
+data,                   0,              MCDATA
+initialize,             0,              MCINITIALIZE
+construct,              0,              MCCONSTRUCT
+press,                  0,              MCPRESS
+release,                0,              MCRELEASE
+releaseoutside,         0,              MCRELEASEOUTSIDE
+rollover,               0,              MCROLLOVER
+rollout,                0,              MCROLLOUT
+dragover,               0,              MCDRAGOVER
+dragout,                0,              MCDRAGOUT
+#
+# push values
+#
+true,                   0,              TRUEVAL
+false,                  0,              FALSEVAL
+null,                   0,              NULLVAL
+undef,                  0,              UNDEFVAL
+#
+# actions
+#
+nextframe,              1,              NEXTFRAME
+prevframe,              1,              PREVFRAME
+gotoframe,              1,              GOTOFRAME
+gotolabel,              1,              GOTOLABEL
+geturl,                 1,              GETURL
+play,                   1,              PLAY
+stop,                   1,              STOP
+stopsounds,             1,              STOPSOUNDS
+togglequality,          1,              TOGGLEQUALITY
+dup,                    1,              DUP
+swap,                   1,              SWAP
+pop,                    1,              POP
+push,                   1,              PUSH
+constants,              1,              CONSTANTPOOL
+setregister,            1,              SETREGISTER
+callfunction,           1,              CALLFUNCTION
+return,                 1,              RETURN
+newmethod,              1,              NEWMETHOD
+callmethod,             1,              CALLMETHOD
+bitwiseand,             1,              BITWISEAND
+bitwiseor,              1,              BITWISEOR
+bitwisexor,             1,              BITWISEXOR
+modulo,                 1,              MODULO
+oldadd,                 1,              OLDADD
+add,                    1,              NEWADD
+newadd,                 1,              NEWADD
+oldlessthan,            1,              OLDLESSTHAN
+lessthan,               1,              NEWLESSTHAN
+newlessthan,            1,              NEWLESSTHAN
+greaterthan,            1,              GREATERTHAN
+oldequals,              1,              OLDEQUALS
+equals,                 1,              NEWEQUALS
+newequals,              1,              NEWEQUALS
+strictequals,           1,              STRICTEQUALS
+tonumber,               1,              TONUMBER
+tostring,               1,              TOSTRING
+increment,              1,              INCREMENT
+decrement,              1,              DECREMENT
+typeof,                 1,              TYPEOF
+targetpath,             1,              TARGETPATH
+enumeratevalue,         1,              ENUMERATEVALUE
+enumerate,              1,              ENUMERATE
+instanceof,             1,              INSTANCEOF
+delete,                 1,              DELETE
+delete2,                1,              DELETE2
+new,                    1,              NEW
+initobject,             1,              INITOBJECT
+initarray,              1,              INITARRAY
+getmember,              1,              GETMEMBER
+setmember,              1,              SETMEMBER
+shiftleft,              1,              SHIFTLEFT
+shiftright,             1,              SHIFTRIGHT
+shiftright2,            1,              SHIFTRIGHT2
+var,                    1,              VAR
+varequals,              1,              VAREQUALS
+subtract,               1,              SUBTRACT
+multiply,               1,              MULTIPLY
+divide,                 1,              DIVIDE
+and,                    1,              LOGICALAND
+or,                     1,              LOGICALOR
+not,                    1,              LOGICALNOT
+stringeq,               1,              STRINGEQ
+stringlength,           1,              STRINGLENGTH
+substring,              1,              SUBSTRING
+int,                    1,              INT
+getvariable,            1,              GETVARIABLE
+setvariable,            1,              SETVARIABLE
+concat,                 1,              STRINGCONCAT
+getproperty,            1,              GETPROPERTY
+setproperty,            1,              SETPROPERTY
+duplicateclip,          1,              DUPLICATECLIP
+removeclip,             1,              REMOVECLIP
+trace,                  1,              TRACE
+startdrag,              1,              STARTDRAGMOVIE
+stopdrag,               1,              STOPDRAGMOVIE
+stringlessthan,         1,              STRINGLESSTHAN
+stringgreaterthan,      1,              STRINGGREATERTHAN
+random,                 1,              RANDOM
+mblength,               1,              MBLENGTH
+ord,                    1,              ORD
+chr,                    1,              CHR
+gettimer,               1,              GETTIMER
+mbsubstring,            1,              MBSUBSTRING
+mbord,                  1,              MBORD
+mbchr,                  1,              MBCHR
+branch,                 1,              BRANCHALWAYS
+branchalways,           1,              BRANCHALWAYS
+branchiftrue,           1,              BRANCHIFTRUE
+geturl2,                1,              GETURL2
+loadvariables,          1,              LOADVARIABLES
+loadvariablesnum,       1,              LOADVARIABLESNUM
+loadmovie,              1,              LOADMOVIE
+loadmovienum,           1,              LOADMOVIENUM
+callframe,              1,              CALLFRAME
+gotoandplay,            1,              GOTOANDPLAY
+gotoandstop,            1,              GOTOANDSTOP
+strictmode,             1,              STRICTMODE
+implements,             1,              IMPLEMENTS
+extends,                1,              EXTENDS
+throw,                  1,              THROW
+cast,                   1,              CAST
+fscommand2,             1,              FSCOMMAND2
+swfaction,              1,              SWFACTION
+#
+# file attributes (flash 8/9)
+#
+attrusenetwork,               0,        ATTRUSENETWORK
+attrrelativeurls,             0,        ATTRRELATIVEURLS
+attrsuppresscrossdomaincache, 0,        ATTRSUPPRESSCROSSDOMAINCACHE
+attractionscript3,            0,        ATTRACTIONSCRIPT3
+attrhasmetadata,              0,        ATTRHASMETADATA
+#
+# helper keywords
+#
+skip,                   0,              SKIP
+as,                     0,              AS
+post,                   0,              POST
+get,                    0,              GET
+hexdata,                0,              HEXDATA
+off,                    0,              OFF
+from,                   0,              FROM
+recursion,              0,              RECURSION
+timeout,                0,              TIMEOUT
